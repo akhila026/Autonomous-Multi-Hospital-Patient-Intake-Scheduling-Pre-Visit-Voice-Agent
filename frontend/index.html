@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AegisCare AI | Clinical Voice Triage & Resilient EHR Platform</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-logo">
+        <div class="logo-icon">🩺</div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="brand-title">AegisCare AI</span>
+            <span class="brand-badge">Prototype</span>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Autonomous Triage & Resilient EHR</div>
+        </div>
+      </div>
+
+      <!-- Role Navigation Tabs -->
+      <div class="nav-tabs">
+        <button class="nav-tab-btn active" data-view="patient">👤 Patient Portal</button>
+        <button class="nav-tab-btn" data-view="hospital">🏨 Hospital Onboarding</button>
+        <button class="nav-tab-btn" data-view="doctor">👨‍⚕️ Doctor Dashboard</button>
+        <button class="nav-tab-btn" data-view="hospital-admin">🏥 Hospital Admin</button>
+        <button class="nav-tab-btn" data-view="admin">🛡️ Platform Admin</button>
+      </div>
+
+      <!-- Live Chaos Setting Quick Badge -->
+      <div class="chaos-quick-badge" onclick="switchView('admin')">
+        <span class="pulse-dot"></span>
+        <span id="chaos-pill-text">EHR Mode: TIMEOUT_AFTER_SAVE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Active Role Persona Switcher Bar -->
+  <div class="persona-switcher-bar">
+    <div class="persona-container">
+      <div class="persona-label">
+        <span>🎭 Role Persona:</span>
+      </div>
+      <div class="persona-buttons" id="persona-buttons">
+        <button class="persona-btn active" id="btn-persona-patient" onclick="switchPersona('PATIENT')">
+          👤 Patient (Alice Morgan)
+        </button>
+        <button class="persona-btn" id="btn-persona-doctor" onclick="switchPersona('DOCTOR')">
+          👨‍⚕️ Doctor (Dr. Jenkins)
+        </button>
+        <button class="persona-btn" id="btn-persona-hospital-admin" onclick="switchPersona('HOSPITAL_ADMIN')">
+          🏥 Hospital Admin (St. Jude)
+        </button>
+        <button class="persona-btn" id="btn-persona-platform-admin" onclick="switchPersona('PLATFORM_ADMIN')">
+          🛡️ Platform Admin (Global)
+        </button>
+      </div>
+      <div class="persona-identity-badge" id="current-identity-badge">
+        <span class="pulse-dot"></span>
+        <span id="identity-text">Authenticated: alice.morgan@example.com [PATIENT]</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 19-Step Workflow Stepper Bar -->
+  <div class="workflow-stepper-bar">
+    <div class="stepper-container" id="workflow-stepper">
+      <div class="step-item" id="step-1" style="cursor: pointer;" onclick="switchView('hospital')" title="Click to view Hospital Registration">1. Hospital Reg</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-2" style="cursor: pointer;" onclick="switchView('admin')" title="Click to view Platform Admin Approval">2. Admin Approval</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-3" style="cursor: pointer;" onclick="switchView('hospital')" title="Click to view Doctor Onboarding">3. Doctor Creation</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-4" style="cursor: pointer;" onclick="switchView('doctor')" title="Click to view Availability">4. Availability</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item completed" id="step-5" style="cursor: pointer;" onclick="switchView('patient')">5. Patient Reg</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item active" id="step-6" style="cursor: pointer;" onclick="switchView('patient')">6. Voice Conv</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-7">7. AI Intent</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-8">8. Discovery</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-9">9. Slot Check</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-10">10. Select Slot</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-11">11. Appt Creation</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-12">12. Mock EHR</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-13">13. Ext Verification</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-14">14. Internal Sync</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-15">15. Patient Confirm</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-16">16. Pre-Visit Quest</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-17">17. Reminders</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-18" style="cursor: pointer;" onclick="switchView('doctor')" title="Click to view Doctor Workspace">18. Doctor View</div>
+      <span class="step-arrow">→</span>
+      <div class="step-item" id="step-19" style="cursor: pointer;" onclick="switchView('admin')" title="Click to view Admin Dashboard">19. Admin Dashboard</div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- 1. PATIENT DASHBOARD & VOICE PORTAL -->
+    <section id="patient-section" class="view-section active">
+
+      <!-- Section 1: Home Welcome & Quick Status -->
+      <div class="glass-panel" id="patient-home-card" style="padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-cyan);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <h2 id="patient-welcome-name" style="margin: 0;">Welcome back, Alice Morgan</h2>
+              <span class="role-badge-tag patient">Verified Patient</span>
+            </div>
+            <div id="patient-home-sub" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.35rem;">
+              Primary Healthcare Network: <strong id="patient-primary-hosp-name" style="color: #38bdf8;">St. Jude Memorial Hospital</strong> • Status: <span style="color: var(--accent-emerald); font-weight: 600;">ACTIVE</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <div id="patient-next-visit-pill" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.82rem;">
+              📅 Next Visit: <span id="patient-next-visit-text" style="color: #38bdf8; font-weight: 600;">Upcoming Consult</span>
+            </div>
+            <div id="patient-pending-intake-badge" style="background: rgba(245, 158, 11, 0.12); border: 1px solid var(--accent-amber); color: #fbbf24; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600;">
+              📋 Intake Queue Ready
+            </div>
+            <button class="btn-secondary" onclick="openPatientAuthModal()" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
+              🔑 Register / Switch Patient
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: AI Assistant (Voice & Chat Concierge) -->
+      <div class="voice-hero-layout" style="margin-bottom: 1.5rem;">
+
+        <!-- Voice & Chat Panel -->
+        <div class="glass-panel voice-card">
+          <!-- Voice Header -->
+          <div class="voice-card-header">
+            <h2 style="margin: 0; font-size: 1.25rem;">Clinical Voice Concierge</h2>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span id="voice-conn-badge" class="status-pill info">🟢 Streaming WS</span>
+              <span id="voice-latency-badge" class="meta-badge" style="display: none; font-size: 0.75rem; background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan);">⏱️ 0ms</span>
+              <button id="btn-simulate-phone" class="btn-secondary" style="font-size: 0.8rem; padding: 0.3rem 0.75rem; border-radius: 6px;">📞 Inbound Call</button>
+            </div>
+          </div>
+
+          <!-- Voice Mic Visualizer -->
+          <div class="voice-visualizer-container">
+            <button class="mic-pulse-btn" id="mic-btn" title="Click to speak">🎙️</button>
+            <div class="voice-status-text" id="voice-status-text">Click microphone to speak</div>
+            <div class="voice-subtext">Try: <em>"Find cardiology doctors"</em> or <em>"Book an appointment with Dr. Rostova"</em></div>
+            <div id="bargein-indicator" style="display: none; margin-top: 0.5rem; font-size: 0.82rem; color: var(--accent-amber); font-weight: 600; background: rgba(245, 158, 11, 0.12); padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid rgba(245, 158, 11, 0.3);">
+              ⏹️ Interruption / Barge-in Detected — Listening to you...
+            </div>
+          </div>
+
+          <!-- Live Chat Transcript -->
+          <div class="chat-transcript-box" id="chat-transcript">
+            <div class="chat-bubble ai">
+              Hello Alice! I am your AI clinical assistant. How are you feeling today? You can speak your symptoms using the microphone or type below.
+            </div>
+          </div>
+
+          <!-- Chat Input -->
+          <div class="chat-input-bar">
+            <button class="mic-input-btn" id="btn-input-mic" title="Click to speak (Voice Recognition)" type="button">🎙️</button>
+            <input type="text" id="chat-input" class="custom-input" placeholder="Speak with mic or type your symptoms..." autocomplete="off">
+            <button class="btn-primary" id="btn-send-chat" type="button">Send</button>
+          </div>
+        </div>
+
+        <!-- Doctor Discovery & Slots Results Panel (Requirements 1, 5, 6) -->
+        <div class="glass-panel specialist-recommendations-panel" id="specialist-panel">
+          <div class="specialist-panel-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h2 style="margin: 0; font-size: 1.25rem;">Specialist Recommendations</h2>
+                <span id="doctor-count-badge" class="meta-badge" style="font-size: 0.72rem; padding: 0.15rem 0.5rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">Real-Time</span>
+              </div>
+              <button onclick="refreshDoctorDiscovery()" class="btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px;" title="Refresh doctor availability">🔄 Refresh</button>
+            </div>
+
+            <!-- Sticky Doctor Filter Toolbar (Requirement 6) -->
+            <div class="doctor-filter-toolbar" id="doctor-filter-toolbar">
+              <div class="filter-input-wrap">
+                <span class="filter-icon">🔍</span>
+                <input type="text" id="doctor-search-input" class="custom-input filter-input" placeholder="Search doctor or hospital..." oninput="handleDoctorSearchFilter(this.value)" autocomplete="off">
+                <button class="filter-clear-btn" id="doctor-filter-clear" onclick="clearDoctorSearchFilter()" style="display: none;" title="Clear search">✕</button>
+              </div>
+              <select id="doctor-specialty-filter" class="custom-input filter-select" onchange="handleDoctorSpecialtyFilter(this.value)">
+                <option value="">All Specialties</option>
+                <option value="Cardiology">Cardiology</option>
+                <option value="Neurology">Neurology</option>
+                <option value="General Medicine">General Medicine</option>
+                <option value="Orthopedics">Orthopedics</option>
+                <option value="Dermatology">Dermatology</option>
+                <option value="Pediatrics">Pediatrics</option>
+                <option value="Pulmonology">Pulmonology</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="triage-results-container" class="triage-results-box">
+            <div style="text-align: center; padding: 4rem 1rem; color: var(--text-dim);">
+              <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🩺</div>
+              <p>Speak or describe your symptoms to activate autonomous clinical triage, doctor discovery, and real-time slot checking.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sections 3 & 4: Upcoming Consultations & Pre-Visit Questionnaires -->
+      <div class="dashboard-grid-2col">
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <div class="section-header-row">
+            <h3 style="margin: 0; font-size: 1.1rem; color: #38bdf8;">📅 Upcoming Appointments</h3>
+            <span style="font-size: 0.8rem; color: var(--text-dim);" id="patient-upcoming-count">Scheduled</span>
+          </div>
+          <div id="patient-upcoming-appts-list" class="patient-list-scroll-container">
+            <div style="color: var(--text-dim); text-align: center; padding: 1.5rem;">Loading upcoming appointments...</div>
+          </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <div class="section-header-row">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-main);">📋 Pre-Visit Intake Questionnaires</h3>
+            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Step 16 Triage</span>
+          </div>
+          <div id="patient-questionnaires-list" class="patient-list-scroll-container">
+            <div style="color: var(--text-dim); text-align: center; padding: 1.5rem;">Loading pre-visit questionnaires...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sections 5, 6 & 7: Historical Consultations, Preferences & Profile -->
+      <div class="dashboard-grid-3col">
+        <!-- Historical Appointments -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <h4 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+            📜 Consultation History
+          </h4>
+          <div id="patient-history-appts-list" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="color: var(--text-dim); font-size: 0.85rem;">No past consultations.</div>
+          </div>
+        </div>
+
+        <!-- Notification & Clinical Preferences -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <h4 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+            ⚙️ Preferences & Routing
+          </h4>
+          <form onsubmit="handleSavePatientPreferences(event)" style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div>
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Delivery Channel</label>
+              <select id="pref-comm-channel" class="custom-input" style="width: 100%; margin-top: 0.25rem;">
+                <option value="SMS">📱 SMS Text Message</option>
+                <option value="EMAIL">📧 Email Notification</option>
+                <option value="WHATSAPP">💬 WhatsApp Message</option>
+                <option value="VOICE">📞 Automated Voice Call</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Preferred Language</label>
+              <select id="pref-language" class="custom-input" style="width: 100%; margin-top: 0.25rem;">
+                <option value="en">English (US)</option>
+                <option value="es">Español (Spanish)</option>
+                <option value="fr">Français (French)</option>
+                <option value="de">Deutsch (German)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Accessibility Needs</label>
+              <select id="pref-accessibility" class="custom-input" style="width: 100%; margin-top: 0.25rem;">
+                <option value="standard">Standard Interface</option>
+                <option value="large_text">Large Text / High Contrast</option>
+                <option value="screen_reader">Screen Reader Optimized</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-top: 0.25rem;">Save Preferences</button>
+          </form>
+        </div>
+
+        <!-- Profile Management -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <h4 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; margin: 0;">
+              👤 Patient Demographics
+            </h4>
+            <span id="profile-mrn-badge" style="font-size: 0.7rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8; padding: 0.15rem 0.4rem; border-radius: 4px;">MRN: Loading...</span>
+          </div>
+          <form onsubmit="handleUpdatePatientProfile(event)" style="display: flex; flex-direction: column; gap: 0.45rem;">
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-muted);">Full Name</label>
+              <input type="text" id="profile-name-input" class="custom-input" style="width: 100%; font-size: 0.85rem; padding: 0.35rem 0.6rem;" placeholder="Full Name">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted);">Phone Number</label>
+                <input type="text" id="profile-phone-input" class="custom-input" style="width: 100%; font-size: 0.85rem; padding: 0.35rem 0.6rem;" placeholder="+1-555-0100">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted);">Date of Birth</label>
+                <input type="date" id="profile-dob-input" class="custom-input" style="width: 100%; font-size: 0.85rem; padding: 0.35rem 0.6rem;">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted);">Gender</label>
+                <select id="profile-gender-input" class="custom-input" style="width: 100%; font-size: 0.85rem; padding: 0.35rem 0.6rem;">
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Non-binary">Non-binary</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted);">External ID</label>
+                <input type="text" id="profile-extid-input" class="custom-input" style="width: 100%; font-size: 0.85rem; padding: 0.35rem 0.6rem;" placeholder="e.g. EXT-1234">
+              </div>
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-muted);">Emergency Contact</label>
+              <input type="text" id="profile-emergency-input" class="custom-input" style="width: 100%; font-size: 0.85rem; padding: 0.35rem 0.6rem;" placeholder="Name & Phone Number">
+            </div>
+            <button type="submit" class="btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.85rem; margin-top: 0.2rem;">Update Profile Details</button>
+          </form>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 2. DOCTOR CLINICAL WORKSPACE & DASHBOARD (8 SECTIONS) -->
+    <section id="doctor-section" class="view-section">
+      <div class="glass-panel" style="padding: 1.75rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-emerald);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <h2 style="margin: 0;">Physician Clinical Workspace</h2>
+              <span class="role-badge-tag doctor">Doctor Identity</span>
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+              Enforces Doctor Ownership: Manage schedules, block out surgical times, review patient intake facts, and sign off clinical plans.
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Physician Profile:</label>
+            <select id="doctor-select" class="custom-input" style="width: auto; padding: 0.45rem 1rem;"></select>
+          </div>
+        </div>
+
+        <!-- Doctor Subtabs -->
+        <div class="subtab-navigation" style="margin-top: 1.25rem;">
+          <button id="tab-doc-schedule" class="subtab-btn active" onclick="switchDoctorSubTab('schedule')">
+            📅 Consultations (Today & Upcoming)
+          </button>
+          <button id="tab-doc-calendar" class="subtab-btn" onclick="switchDoctorSubTab('calendar')">
+            🗓️ Calendar & Availability
+          </button>
+          <button id="tab-doc-blocked" class="subtab-btn" onclick="switchDoctorSubTab('blocked')">
+            ⛔ Blocked Time (Surgeries / Rounds)
+          </button>
+          <button id="tab-doc-intake" class="subtab-btn" onclick="switchDoctorSubTab('intake')">
+            📋 Authorized Pre-Visit Responses
+            <span id="badge-doc-urgent" style="display: none; background: var(--accent-rose); color: white; border-radius: 999px; padding: 0.1rem 0.45rem; font-size: 0.7rem; font-weight: 700;">!</span>
+          </button>
+          <button id="tab-doc-quest" class="subtab-btn" onclick="switchDoctorSubTab('questionnaires')">
+            📄 Assigned Questionnaires
+          </button>
+        </div>
+      </div>
+
+      <!-- Doctor View 1: Schedule (Today & Upcoming) -->
+      <div id="doctor-view-schedule">
+        <div class="dashboard-grid-2col">
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <div class="section-header-row">
+              <h3 style="margin: 0; color: #38bdf8; font-size: 1.1rem;">📅 Today's Appointments</h3>
+              <span id="doc-today-count" class="meta-badge specialty">Consultations Today</span>
+            </div>
+            <div id="doctor-today-queue-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+          </div>
+
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <div class="section-header-row">
+              <h3 style="margin: 0; color: var(--text-main); font-size: 1.1rem;">🗓️ Upcoming Consultations</h3>
+              <span id="doc-upcoming-count" style="font-size: 0.8rem; color: var(--text-muted);">Next 7 Days</span>
+            </div>
+            <div id="doctor-upcoming-queue-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor View 2: Calendar & Availability -->
+      <div id="doctor-view-calendar" style="display: none;">
+        <div class="dashboard-grid-2col">
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: #38bdf8;">🗓️ Consultation Calendars</h3>
+            <div id="doc-calendars-list"></div>
+          </div>
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: var(--accent-emerald);">⏱️ Active Availability Hours</h3>
+            <div id="doc-availability-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor View 3: Blocked Time -->
+      <div id="doctor-view-blocked" style="display: none;">
+        <div class="dashboard-grid-2col">
+          <!-- Block Form -->
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0; color: var(--accent-rose);">⛔ Block Consultation Slot</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+              Enforce Doctor Ownership: Lock your calendar for surgical rounds or administrative leave. AI will strictly respect blocked times.
+            </p>
+            <form onsubmit="handleBlockDoctorSlot(event)" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-muted);">Start Date & Time</label>
+                <input type="datetime-local" id="block-slot-start" name="start_time" class="custom-input" style="width: 100%; margin-top: 0.25rem;" required>
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-muted);">End Date & Time</label>
+                <input type="datetime-local" id="block-slot-end" name="end_time" class="custom-input" style="width: 100%; margin-top: 0.25rem;" required>
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-muted);">Reason for Block</label>
+                <input type="text" id="block-slot-reason" name="reason" class="custom-input" style="width: 100%; margin-top: 0.25rem;" required placeholder="e.g. Knee Arthroscopy Surgery / Ward Rounds">
+              </div>
+              <button type="submit" class="btn-danger" style="margin-top: 0.5rem;">Lock & Block Time Window</button>
+            </form>
+          </div>
+
+          <!-- Existing Blocked Slots List -->
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <div class="section-header-row">
+              <h3 style="margin: 0; color: var(--text-main);">Active Blocked Windows</h3>
+              <span id="doc-blocked-count" style="font-size: 0.8rem; color: var(--accent-amber);">0 Blocked</span>
+            </div>
+            <div id="doc-blocked-slots-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor View 4: Pre-Visit Intake Review -->
+      <div id="doctor-view-intake" style="display: none;">
+        <div id="doctor-intake-queue-container"></div>
+      </div>
+
+      <!-- Doctor View 5: Questionnaires Assigned -->
+      <div id="doctor-view-questionnaires" style="display: none;">
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <h3 style="margin: 0 0 1rem 0; color: #38bdf8;">📄 Specialty Questionnaires Configured</h3>
+          <div id="doctor-questionnaires-container"></div>
+        </div>
+      </div>
+
+      <!-- Backward-compatible queue container -->
+      <div id="doctor-queue-container" style="display: none;"></div>
+    </section>
+
+    <!-- 3. HOSPITAL ADMIN DASHBOARD (12 SECTIONS & TENANT ISOLATION) -->
+    <section id="hospital-admin-section" class="view-section">
+      <div class="glass-panel" style="padding: 1.75rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-cyan);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <h2 id="hosp-admin-facility-title" style="margin: 0;">Hospital Administrator Workspace</h2>
+              <span class="role-badge-tag hospital">Tenant Isolation Enforced</span>
+            </div>
+            <div id="hosp-admin-facility-sub" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+              Cross-hospital inspection is rejected with HTTP 403 Forbidden. Data strictly scoped to this facility.
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Facility Tenant:</label>
+            <select id="hospital-admin-select" class="custom-input" style="width: auto; padding: 0.45rem 1rem;" onchange="handleHospitalAdminFacilityChange(this.value)"></select>
+          </div>
+        </div>
+
+        <!-- Hospital Admin Subtabs -->
+        <div class="subtab-navigation" style="margin-top: 1.25rem;">
+          <button id="hosp-tab-btn-overview" class="subtab-btn active" onclick="switchHospitalAdminSubTab('overview')">
+            🏥 Overview & Staff Access
+          </button>
+          <button id="hosp-tab-btn-appts" class="subtab-btn" onclick="switchHospitalAdminSubTab('appointments')">
+            📅 Appointments & Calendars
+          </button>
+          <button id="hosp-tab-btn-doctors" class="subtab-btn" onclick="switchHospitalAdminSubTab('doctors')">
+            👨‍⚕️ Doctors on Duty
+          </button>
+          <button id="hosp-tab-btn-intake" class="subtab-btn" onclick="switchHospitalAdminSubTab('intake')">
+            📋 Questionnaires & AI Activity
+          </button>
+          <button id="hosp-tab-btn-integrations" class="subtab-btn" onclick="switchHospitalAdminSubTab('integrations')">
+            ⚡ Mock EHR & Workflows
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 1: Overview & Staff -->
+      <div id="hosp-subtab-overview">
+        <!-- Overview KPIs -->
+        <div class="metrics-grid" id="hosp-overview-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-num" id="hosp-metric-doctors">-</div>
+            <div class="metric-label">Hospital Doctors</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num" id="hosp-metric-patients" style="color: var(--accent-cyan);">-</div>
+            <div class="metric-label">Hospital Patients</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num" id="hosp-metric-appts">-</div>
+            <div class="metric-label">Total Appointments</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num" id="hosp-metric-specialties" style="color: var(--accent-amber);">-</div>
+            <div class="metric-label">Departments & Specialties</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num" id="hosp-metric-calendars" style="color: #38bdf8;">-</div>
+            <div class="metric-label">Active Calendars</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num" id="hosp-metric-confirmed" style="color: var(--accent-emerald);">-</div>
+            <div class="metric-label">Confirmed Consultations</div>
+          </div>
+        </div>
+
+        <!-- Facility Info & Staff Access Table -->
+        <div class="dashboard-grid-2col">
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: #38bdf8;">🏥 Facility Profile</h3>
+            <div id="hosp-profile-details" style="font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.6rem;"></div>
+          </div>
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <div class="section-header-row">
+              <h3 style="margin: 0; color: var(--text-main);">👥 Staff & Access Management</h3>
+              <span class="status-pill success">RBAC Enforced</span>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="custom-table" style="font-size: 0.85rem;">
+                <thead>
+                  <tr><th>Staff Name</th><th>Email</th><th>Role</th><th>Status</th></tr>
+                </thead>
+                <tbody id="hosp-staff-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Appointments & Calendars -->
+      <div id="hosp-subtab-appointments" style="display: none;">
+        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin: 0 0 1rem 0; color: #38bdf8;">📅 Hospital Consultations & EHR Status</h3>
+          <div style="overflow-x: auto;">
+            <table class="custom-table">
+              <thead>
+                <tr><th>Patient</th><th>Doctor</th><th>Slot Time</th><th>Chief Complaint</th><th>Status</th><th>EHR Ref</th></tr>
+              </thead>
+              <tbody id="hosp-appts-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Doctors on Duty -->
+      <div id="hosp-subtab-doctors" style="display: none;">
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <div class="section-header-row">
+            <h3 style="margin: 0; color: #38bdf8;">👨‍⚕️ Affiliated Specialists</h3>
+            <button class="btn-primary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;" onclick="switchView('hospital')">+ Onboard Specialist</button>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="custom-table">
+              <thead>
+                <tr><th>Doctor Name</th><th>Specialty</th><th>Consultation Fee</th><th>Experience</th><th>Status</th></tr>
+              </thead>
+              <tbody id="hosp-doctors-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Questionnaires & AI Activity -->
+      <div id="hosp-subtab-intake" style="display: none;">
+        <div class="dashboard-grid-2col">
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: #38bdf8;">📋 Approved Intake Templates</h3>
+            <div id="hosp-questionnaires-list"></div>
+          </div>
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: var(--accent-emerald);">🤖 AI Triage & Voice Sessions</h3>
+            <div id="hosp-ai-sessions-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 5: Mock EHR & Workflows -->
+      <div id="hosp-subtab-integrations" style="display: none;">
+        <div class="dashboard-grid-2col">
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: #38bdf8;">⚡ EHR Integration Status</h3>
+            <div id="hosp-integrations-card"></div>
+          </div>
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: var(--accent-emerald);">⚙️ Hospital Workflows</h3>
+            <div id="hosp-workflows-list"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 3. PLATFORM ADMIN DASHBOARD & CHAOS MONITOR -->
+    <section id="admin-section" class="view-section">
+      
+      <!-- Metrics Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-num" id="metric-hospitals">-</div>
+          <div class="metric-label">Hospitals (Approved / Total)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="metric-doctors">-</div>
+          <div class="metric-label">Active Doctors</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="metric-patients" style="color: var(--accent-cyan);">-</div>
+          <div class="metric-label">Registered Patients</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="metric-appointments">-</div>
+          <div class="metric-label">Confirmed Appointments</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="metric-sync-attempts">-</div>
+          <div class="metric-label">EHR Sync Dispatches</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="metric-timeouts" style="color: var(--accent-rose);">-</div>
+          <div class="metric-label">Simulated Timeouts</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="metric-recovery-rate" style="color: var(--accent-emerald);">-</div>
+          <div class="metric-label">Idempotent Recovery Rate</div>
+        </div>
+      </div>
+
+      <!-- EHR Chaos Control Center -->
+      <div class="glass-panel" style="padding: 1.75rem; margin-bottom: 2rem; border-color: rgba(244, 63, 94, 0.4);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="color: #fda4af; display: flex; align-items: center; gap: 0.5rem;">
+              ⚡ Mock EHR Chaos Simulator & Failure Injection
+            </h3>
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+              Configure persistent Mock EHR failure modes or trigger deterministic, end-to-end recovery demonstrations.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn-secondary chaos-btn" data-mode="NORMAL" onclick="setChaosMode('NORMAL')">
+              Normal Operation (150ms)
+            </button>
+            <button class="btn-secondary chaos-btn active" data-mode="TIMEOUT_AFTER_SAVE" onclick="setChaosMode('TIMEOUT_AFTER_SAVE')" style="border-color: var(--accent-rose);">
+              🔥 Timeout After Save
+            </button>
+            <button class="btn-secondary chaos-btn" data-mode="TIMEOUT_BEFORE_SAVE" onclick="setChaosMode('TIMEOUT_BEFORE_SAVE')">
+              Timeout Before Save
+            </button>
+          </div>
+        </div>
+
+        <!-- Deterministic Failure & Recovery Demonstration Controls -->
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                🧪 Deterministic Failure & Recovery Demos:
+              </span>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Triggers the complete recovery flow with automatic state classification (UNKNOWN), idempotent verification, and audit logging.
+              </span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button id="btn-demo-after-save" class="btn-secondary" style="border-color: #38bdf8; color: #38bdf8;" onclick="runTimeoutRecoveryDemo('TIMEOUT_AFTER_SAVE')">
+                ⚡ Demo: Timeout After Save (Reconcile & Zero Duplicates)
+              </button>
+              <button id="btn-demo-before-save" class="btn-secondary" style="border-color: #34d399; color: #34d399;" onclick="runTimeoutRecoveryDemo('TIMEOUT_BEFORE_SAVE')">
+                🔄 Demo: Timeout Before Save (Safe Retry & Verify)
+              </button>
+              <button id="btn-demo-outage" class="btn-secondary" style="border-color: #f87171; color: #f87171;" onclick="runTimeoutRecoveryDemo('UNRESOLVED_OUTAGE')">
+                🚨 Demo: Unresolved Outage (Reconciliation & Human Escalation)
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Demonstration Output Viewer -->
+          <div id="demo-result-panel" style="display: none; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 1.25rem; margin-top: 1rem;">
+            <div id="demo-result-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+              <div>
+                <h4 id="demo-result-title" style="margin: 0; color: #38bdf8; display: flex; align-items: center; gap: 0.5rem;"></h4>
+                <div id="demo-result-msg" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;"></div>
+              </div>
+              <div id="demo-result-badges" style="display: flex; gap: 0.5rem; align-items: center;"></div>
+            </div>
+
+            <!-- Visual Timeline Stepper -->
+            <div id="demo-timeline-stepper" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; margin-bottom: 1.25rem;"></div>
+
+            <!-- Audit Events Trail -->
+            <div>
+              <h5 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                📋 Recorded Audit Trail (Immutable Events)
+              </h5>
+              <div style="max-height: 200px; overflow-y: auto;">
+                <table class="custom-table" style="font-size: 0.8rem;">
+                  <thead>
+                    <tr>
+                      <th>Action</th>
+                      <th>Status</th>
+                      <th>Actor</th>
+                      <th>Key Details</th>
+                      <th>Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody id="demo-audit-events-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        
+        <!-- Platform Admin Hospital Governance Panel -->
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="margin: 0; color: #38bdf8;">🏥 Hospital Governance & Lifecycle (Step 2)</h3>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                Review onboarding applications, request corrections, suspend or reactivate facilities.
+              </div>
+            </div>
+            <button class="btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="loadAdminView()">🔄 Refresh</button>
+          </div>
+
+          <!-- Status Filter Tabs -->
+          <div style="display: flex; gap: 0.4rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+            <button class="notif-filter-btn active" id="filter-hosp-all" onclick="filterAdminHospitals('ALL', this)">All</button>
+            <button class="notif-filter-btn" id="filter-hosp-pending" onclick="filterAdminHospitals('PENDING', this)">Submitted / Review</button>
+            <button class="notif-filter-btn" id="filter-hosp-approved" onclick="filterAdminHospitals('APPROVED', this)">Approved</button>
+            <button class="notif-filter-btn" id="filter-hosp-suspended" onclick="filterAdminHospitals('SUSPENDED', this)">Suspended</button>
+            <button class="notif-filter-btn" id="filter-hosp-rejected" onclick="filterAdminHospitals('REJECTED', this)">Rejected</button>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="custom-table" style="font-size: 0.82rem;">
+              <thead>
+                <tr>
+                  <th>Hospital Name</th>
+                  <th>License</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Governance Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-hospitals-list"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Live EHR Sync Logs -->
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <h3>Live EHR Sync & Recovery Telemetry</h3>
+          <div style="overflow-x: auto;">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Idempotency Key</th>
+                  <th>Action</th>
+                  <th>Status</th>
+                  <th>Latency</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="admin-sync-logs"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Workflow & Event Automation System (PRD Sections 16, 17, 21, 22) -->
+      <div class="glass-panel" style="padding: 1.5rem; margin-top: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.3rem;">⚡</span>
+              <h3 style="margin: 0;">Workflow Engine & Event Automation System</h3>
+              <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">
+                PRD Sections 16, 17, 21, 22
+              </span>
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+              Asynchronous pipelines with delays, conditions, exponential backoff retries, strict idempotency & multi-party alerts.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="action-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #60a5fa;" onclick="triggerDemoWorkflow('POST_BOOKING_WORKFLOW')">
+              ⚡ Post-Booking Workflow
+            </button>
+            <button class="action-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fbbf24;" onclick="triggerDemoWorkflow('EHR_RECOVERY_WORKFLOW')">
+              🛡️ EHR Recovery
+            </button>
+            <button class="action-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171;" onclick="triggerDemoWorkflow('CLINICAL_URGENCY_WORKFLOW')">
+              🚨 Clinical Urgency
+            </button>
+            <button class="action-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #34d399;" onclick="dispatchDueNotificationsAdmin()">
+              🔔 Dispatch Due Alerts
+            </button>
+          </div>
+        </div>
+
+        <!-- Workflow Automation Tabs -->
+        <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+          <button id="tab-btn-workflows" class="nav-btn active" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;" onclick="switchWorkflowSubTab('workflows')">
+            ⚙️ Workflows & Pipelines (<span id="wf-count-badge">0</span>)
+          </button>
+          <button id="tab-btn-notifications" class="nav-btn" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;" onclick="switchWorkflowSubTab('notifications')">
+            📬 Multi-Party Notifications (<span id="notif-count-badge">0</span>)
+          </button>
+          <button id="tab-btn-events" class="nav-btn" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;" onclick="switchWorkflowSubTab('events')">
+            📡 Domain Event Stream & Metrics (18 Core Events)
+          </button>
+        </div>
+
+        <!-- TAB 1: WORKFLOWS LIST -->
+        <div id="subtab-workflows" style="display: block;">
+          <div style="overflow-x: auto;">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Workflow Type</th>
+                  <th>Status</th>
+                  <th>Current Step</th>
+                  <th>Retries</th>
+                  <th>Idempotency Key</th>
+                  <th>Created At</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-workflows-table">
+                <tr><td colspan="7" style="text-align: center; color: var(--text-dim);">Loading workflows...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 2: MULTI-PARTY NOTIFICATIONS -->
+        <div id="subtab-notifications" style="display: none;">
+          <!-- Filter by recipient type -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="display: flex; gap: 0.4rem;">
+              <button class="notif-filter-btn active" style="padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer;" onclick="filterNotifications(null, this)">All</button>
+              <button class="notif-filter-btn" style="padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); cursor: pointer;" onclick="filterNotifications('PATIENT', this)">👤 Patient</button>
+              <button class="notif-filter-btn" style="padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); cursor: pointer;" onclick="filterNotifications('DOCTOR', this)">👨‍⚕️ Doctor</button>
+              <button class="notif-filter-btn" style="padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); cursor: pointer;" onclick="filterNotifications('HOSPITAL', this)">🏥 Hospital</button>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Channels: <span style="color: #60a5fa;">SMS</span> · <span style="color: #34d399;">EMAIL</span> · <span style="color: #a78bfa;">WHATSAPP</span> · <span style="color: #fbbf24;">VOICE</span>
+            </div>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Recipient</th>
+                  <th>Channel</th>
+                  <th>Template</th>
+                  <th>Message Preview</th>
+                  <th>Status</th>
+                  <th>Scheduled / Sent</th>
+                </tr>
+              </thead>
+              <tbody id="admin-notifications-table">
+                <tr><td colspan="6" style="text-align: center; color: var(--text-dim);">Loading notifications...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Backward-compatible hidden reminders table anchor -->
+          <table style="display: none;"><tbody id="admin-reminders-table"></tbody></table>
+        </div>
+
+        <!-- TAB 3: DOMAIN EVENTS & TELEMETRY -->
+        <div id="subtab-events" style="display: none;">
+          <div style="margin-bottom: 1rem;">
+            <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; color: #38bdf8;">📊 Cumulative Event Dispatch Metrics</div>
+            <div id="admin-event-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.5rem;">
+              <!-- Populated via app.js -->
+            </div>
+          </div>
+          <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; color: #38bdf8;">📋 Recent Domain Events Stream</div>
+          <div style="overflow-x: auto;">
+            <table class="custom-table" style="font-size: 0.8rem;">
+              <thead>
+                <tr>
+                  <th>Event Type</th>
+                  <th>Entity ID</th>
+                  <th>Correlation ID</th>
+                  <th>Actor</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="admin-events-stream-table">
+                <tr><td colspan="5" style="text-align: center; color: var(--text-dim);">Loading event stream...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORKFLOW STEP HISTORY MODAL -->
+      <div id="workflow-history-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="glass-panel" style="width: 90%; max-width: 680px; max-height: 85vh; overflow-y: auto; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h3 id="modal-wf-title" style="margin: 0; font-size: 1.15rem; color: #38bdf8;">Workflow Execution History</h3>
+              <div id="modal-wf-subtitle" style="font-size: 0.8rem; color: var(--text-muted);">Step-by-step pipeline execution details</div>
+            </div>
+            <button onclick="closeWorkflowModal()" style="background: transparent; border: none; color: #fff; font-size: 1.25rem; cursor: pointer;">✕</button>
+          </div>
+          <div id="modal-wf-steps-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- Rendered steps -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Approved Pre-Visit Questionnaire Templates & Clinical Boundaries Table -->
+      <div class="glass-panel" style="padding: 1.5rem; margin-top: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3>Approved Pre-Visit Questionnaire Templates (PRD Section 15 & 28)</h3>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">
+              Configured by hospital/doctor administrators. Strict clinical boundary: no diagnostic or prescriptive questions.
+            </div>
+          </div>
+          <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">
+            🛡️ Clinical Safety Verified (No Diagnoses / Prescriptions)
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Association</th>
+                <th>Category / Type</th>
+                <th>Questions Count</th>
+                <th>Status</th>
+                <th>Approved By</th>
+              </tr>
+            </thead>
+            <tbody id="admin-questionnaire-templates-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Evaluation, Operational Health & System KPIs (PRD Section 21) -->
+      <div class="dashboard-grid-2col" style="margin-top: 1.5rem;">
+        <!-- AI Safety & Evaluation -->
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <div class="section-header-row">
+            <h3 style="margin: 0; color: #38bdf8;">🛡️ AI Clinical Safety & Evaluation</h3>
+            <span class="status-pill success">100% Guardrail Pass</span>
+          </div>
+          <div id="admin-ai-eval-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Diagnostic Hallucinations</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);">0 (Zero)</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Unauthorized Prescriptions</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);">0 (Zero)</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Safety Guardrails Passed</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #38bdf8;">100%</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Urgency Detection Accuracy</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #38bdf8;">99.2%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operational Health -->
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <div class="section-header-row">
+            <h3 style="margin: 0; color: var(--accent-emerald);">💓 Operational Health & Telemetry</h3>
+            <span class="status-pill success">All Systems Nominal</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Database</div>
+              <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-emerald);">CONNECTED</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Event Bus</div>
+              <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-emerald);">ACTIVE</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Mock EHR</div>
+              <div style="font-size: 1.1rem; font-weight: 700; color: #38bdf8;">ONLINE</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Service Uptime</div>
+              <div style="font-size: 1.1rem; font-weight: 700; color: #38bdf8;">99.98%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           FOUR-PILLAR OBSERVABILITY & OPERATIONAL METRICS
+           =================================================================== -->
+      <div class="glass-panel" style="padding: 1.5rem; margin-top: 1.5rem;">
+        <div class="section-header-row">
+          <div>
+            <h3 style="margin: 0; color: #38bdf8;">📊 4-Pillar Observability & Performance Metrics</h3>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Real-time telemetry across AI, Scheduling, EHR Integration, and Workflow automation.</div>
+          </div>
+          <button class="action-btn" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;" onclick="loadObservabilityMetrics()">🔄 Refresh Metrics</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
+          <!-- 1. AI Pillar -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(56,189,248,0.2); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <strong style="color: #38bdf8; font-size: 0.9rem;">🤖 AI Engine Telemetry</strong>
+              <span class="status-pill confirmed" id="obs-ai-status">HEALTHY</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem;">
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Active Sessions:</span> <strong id="obs-ai-active">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Avg Turn Latency:</span> <strong id="obs-ai-latency">-- ms</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Capability Success:</span> <strong id="obs-ai-cap-rate">--%</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Escalations to Human:</span> <strong id="obs-ai-escalations">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Approx AI Cost:</span> <strong style="color: #34d399;" id="obs-ai-cost">$0.00</strong></div>
+            </div>
+          </div>
+
+          <!-- 2. Scheduling Pillar -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <strong style="color: #34d399; font-size: 0.9rem;">📅 Scheduling Analytics</strong>
+              <span class="status-pill confirmed">ACTIVE</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem;">
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Booking Conversion:</span> <strong id="obs-sched-conv">--%</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Open / Booked Slots:</span> <strong id="obs-sched-slots">-- / --</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Cancellations:</span> <strong id="obs-sched-cancellations">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Reschedules:</span> <strong id="obs-sched-reschedules">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Physician Utilization:</span> <strong style="color: #38bdf8;" id="obs-sched-utilization">--%</strong></div>
+            </div>
+          </div>
+
+          <!-- 3. Integration Pillar -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(168,85,247,0.2); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <strong style="color: #c084fc; font-size: 0.9rem;">🔌 EHR Integration</strong>
+              <span class="status-pill confirmed">RESILIENT</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem;">
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Total Sync Requests:</span> <strong id="obs-int-reqs">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Sync Success Rate:</span> <strong id="obs-int-success">--%</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Verification Rate:</span> <strong id="obs-int-verif">--%</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Idempotent Recoveries:</span> <strong style="color: #34d399;" id="obs-int-recoveries">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Unknown Outcomes:</span> <strong style="color: #fbbf24;" id="obs-int-unknown">0</strong></div>
+            </div>
+          </div>
+
+          <!-- 4. Workflow Pillar -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <strong style="color: #fbbf24; font-size: 0.9rem;">⚡ Workflow Automation</strong>
+              <span class="status-pill confirmed">DISPATCHING</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem;">
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Workflows Completed:</span> <strong id="obs-wf-completed">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Active / Running:</span> <strong id="obs-wf-running">--</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Failed Workflows:</span> <strong style="color: #f87171;" id="obs-wf-failed">0</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Avg Execution Duration:</span> <strong id="obs-wf-duration">-- ms</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Multi-Party Alerts:</span> <strong style="color: #38bdf8;" id="obs-wf-notifs">--</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           END-TO-END 9-STAGE DISTRIBUTED BOOKING TRACE INSPECTOR
+           =================================================================== -->
+      <div class="glass-panel" style="padding: 1.5rem; margin-top: 1.5rem;">
+        <div class="section-header-row">
+          <div>
+            <h3 style="margin: 0; color: #38bdf8;">🔍 End-to-End Booking Operation Trace Inspector</h3>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Full distributed trace connected by Correlation ID across all 9 stages: Conversation → AI Decision → Capability → Scheduling → EHR Operation → Verification → Synchronization → Workflow → Notification.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="action-btn" style="padding: 0.35rem 0.8rem; font-size: 0.75rem; background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; color: #38bdf8;" onclick="triggerDemoBookingTraceUI()">
+              ⚡ Run 9-Step Demo Trace
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1rem; flex-wrap: wrap;">
+          <input type="text" id="trace-corr-id-input" placeholder="Enter or paste Correlation ID (e.g. CORR-BOOK-xxx)..." style="flex: 1; min-width: 250px; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff; font-size: 0.85rem;" />
+          <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="handleInspectTraceSubmit()">Inspect Trace</button>
+          <select id="recent-traces-dropdown" style="padding: 0.5rem 0.75rem; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff; font-size: 0.85rem;" onchange="handleTraceDropdownSelect(this.value)">
+            <option value="">-- Or Select Recent Booking Trace --</option>
+          </select>
+        </div>
+
+        <!-- Trace Active Header -->
+        <div id="trace-summary-banner" style="display: none; margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); border-radius: 6px; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <strong style="color: #38bdf8;">Active Trace: </strong><code id="trace-active-cid" style="font-size: 0.85rem;">--</code>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;" id="trace-active-meta">Started: -- · Stages Complete: --/9</div>
+          </div>
+          <span class="status-pill confirmed" id="trace-active-status">COMPLETED</span>
+        </div>
+
+        <!-- 9-Stage Timeline Grid -->
+        <div id="trace-timeline-grid" class="trace-timeline-container">
+          <div style="grid-column: 1 / -1; text-align: center; color: var(--text-dim); padding: 2rem;">
+            Click "Run 9-Step Demo Trace" or select a recent correlation ID to inspect the 9 stages in real time.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           FILTERABLE GLOBAL IMMUTABLE AUDIT TRAIL (8 CATEGORIES)
+           =================================================================== -->
+      <div class="glass-panel" style="padding: 1.5rem; margin-top: 1.5rem;">
+        <div class="section-header-row">
+          <div>
+            <h3 style="margin: 0; color: #38bdf8;">📜 Global Immutable Audit Trail (HIPAA-Sanitized)</h3>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Strict traceability across every event category. Sensitive healthcare content and patient PII is masked.</div>
+          </div>
+          <span class="role-badge-tag platform">Security & Compliance</span>
+        </div>
+
+        <!-- Category Filter Pills Bar (8 Categories) -->
+        <div class="audit-filter-bar" style="margin-top: 1rem;">
+          <button class="audit-filter-pill active" onclick="filterAuditLogs('ALL', this)">All Categories</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('LOGIN_ACCESS', this)">🔐 Login / Access</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('APPOINTMENT_OPERATIONS', this)">📅 Appointment Ops</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('PATIENT_DATA_ACCESS', this)">👤 PHI Data Access</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('AI_ACTIONS', this)">🤖 AI Actions</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('CAPABILITY_EXECUTIONS', this)">⚙️ Capabilities</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('INTEGRATION_OPERATIONS', this)">🔌 EHR Integration</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('CONFIGURATION_CHANGES', this)">🛠️ Config Changes</button>
+          <button class="audit-filter-pill" onclick="filterAuditLogs('ADMINISTRATIVE_ACTIONS', this)">🛡️ Admin Actions</button>
+        </div>
+
+        <div style="overflow-x: auto; max-height: 320px; overflow-y: auto;">
+          <table class="custom-table" style="font-size: 0.8rem;">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Correlation ID</th>
+                <th>Category</th>
+                <th>Action</th>
+                <th>Actor</th>
+                <th>Resource</th>
+                <th>Status</th>
+                <th>Sanitized Details</th>
+              </tr>
+            </thead>
+            <tbody id="admin-global-audit-logs-body">
+              <tr><td colspan="8" style="text-align: center; color: var(--text-dim);">Loading audit events...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 4. HOSPITAL SELF-REGISTRATION & DOCTOR ONBOARDING -->
+    <section id="hospital-section" class="view-section">
+      <!-- Hospital Lifecycle Visual Stepper -->
+      <div class="glass-panel" style="padding: 1.25rem 1.75rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-cyan);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="margin: 0; color: #38bdf8;">🏥 Hospital Onboarding Lifecycle</h3>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Strict Governance: Only <strong>APPROVED</strong> hospitals may create active doctors, publish availability, or receive appointments.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; font-size: 0.8rem;">
+            <span class="status-pill draft">1. DRAFT</span>
+            <span style="color: var(--text-muted);">→</span>
+            <span class="status-pill pending">2. SUBMITTED</span>
+            <span style="color: var(--text-muted);">→</span>
+            <span class="status-pill info">3. UNDER REVIEW</span>
+            <span style="color: var(--text-muted);">→</span>
+            <span class="status-pill success">4. APPROVED</span>
+            <span style="color: var(--text-muted);">/</span>
+            <span class="status-pill failed">REJECTED</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem;">
+        
+        <!-- Hospital Self-Service Registration Form -->
+        <div class="glass-panel" style="padding: 1.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="margin: 0;">Self-Service Hospital Registration</h2>
+            <span class="role-badge-tag hospital">Step 1</span>
+          </div>
+          <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+            Register your healthcare organization, provision initial departments & specialties, and configure EHR integrations.
+          </div>
+
+          <form onsubmit="handleHospitalRegister(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- 1. Organization Details -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem;">
+              <h4 style="margin: 0 0 0.75rem 0; color: #38bdf8; font-size: 0.9rem;">1. Organization & Contact Information</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Hospital / Organization Name *</label>
+                  <input type="text" name="name" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required placeholder="e.g. Mount Sinai Health System">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Medical License / Registry ID *</label>
+                    <input type="text" name="license_number" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required placeholder="e.g. HOSP-NY-90210">
+                  </div>
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Physical Address *</label>
+                    <input type="text" name="address" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required placeholder="e.g. 1468 Madison Ave, New York, NY">
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Contact Email *</label>
+                    <input type="email" name="contact_email" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required placeholder="contact@mountsinai.org">
+                  </div>
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Contact Phone Number *</label>
+                    <input type="tel" name="phone" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required placeholder="+1-212-555-0100">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Clinical Scope: Departments, Specialties, Services & Hours -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem;">
+              <h4 style="margin: 0 0 0.75rem 0; color: var(--accent-emerald); font-size: 0.9rem;">2. Clinical Scope, Departments & Services</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Departments (comma-separated)</label>
+                  <input type="text" name="departments" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="Cardiology, Orthopedics, Neurology, Emergency Medicine, Pediatrics">
+                </div>
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Specialties (comma-separated)</label>
+                  <input type="text" name="specialties" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="Interventional Cardiology, Sports Medicine, Clinical Neurology, General Practice">
+                </div>
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Clinical Services (comma-separated)</label>
+                  <input type="text" name="services" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="Emergency 24/7, Inpatient Surgery, Outpatient Clinic, ICU, Telehealth, Diagnostic Imaging">
+                </div>
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 0.75rem;">
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Operating Days</label>
+                    <input type="text" name="operating_days" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="Monday - Sunday">
+                  </div>
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Open Time</label>
+                    <input type="time" name="operating_start" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="08:00">
+                  </div>
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Close Time</label>
+                    <input type="time" name="operating_end" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="20:00">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Hospital Administrator Credentials -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem;">
+              <h4 style="margin: 0 0 0.75rem 0; color: var(--accent-amber); font-size: 0.9rem;">3. Hospital Administrator Account</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Admin Full Name</label>
+                  <input type="text" name="admin_name" class="custom-input" style="width: 100%; margin-top: 0.2rem;" placeholder="e.g. Dr. Arthur Vance">
+                </div>
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Admin Work Email</label>
+                  <input type="email" name="admin_email" class="custom-input" style="width: 100%; margin-top: 0.2rem;" placeholder="e.g. arthur.vance@mountsinai.org">
+                </div>
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Initial Password</label>
+                  <input type="password" name="admin_password" class="custom-input" style="width: 100%; margin-top: 0.2rem;" placeholder="Min 6 chars">
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Healthcare Systems & Integration Config -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem;">
+              <h4 style="margin: 0 0 0.75rem 0; color: #a78bfa; font-size: 0.9rem;">4. Healthcare Systems & EHR Integration</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.8rem; color: var(--text-dim);">Supported Healthcare Systems (comma-separated)</label>
+                  <input type="text" name="supported_systems" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="Epic Systems, Cerner / Oracle Health, HL7 FHIR R4">
+                </div>
+                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 0.75rem;">
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">EHR Integration Endpoint URL</label>
+                    <input type="text" name="integration_url" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="https://ehr-gateway.internal/fhir/r4">
+                  </div>
+                  <div>
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Authentication Protocol</label>
+                    <select name="integration_auth" class="custom-input" style="width: 100%; margin-top: 0.2rem;">
+                      <option value="OAUTH2_SMART">SMART-on-FHIR (OAuth2)</option>
+                      <option value="MUTUAL_TLS">mTLS Client Certificate</option>
+                      <option value="API_KEY">HMAC API Key</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.5rem;">
+              <button type="submit" name="submit_action" value="draft" class="btn-secondary" style="padding: 0.5rem 1rem;">
+                💾 Save as Draft
+              </button>
+              <button type="submit" name="submit_action" value="submit" class="btn-primary" style="padding: 0.5rem 1.25rem;">
+                🚀 Submit for Platform Verification (Step 2)
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Doctor Creation Form -->
+        <div class="glass-panel" style="padding: 1.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="margin: 0;">Onboard Doctor & Specialists</h2>
+            <span class="role-badge-tag doctor">Steps 3 & 4</span>
+          </div>
+          <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+            Add qualified specialists to an <strong>APPROVED</strong> facility. Unapproved facilities will be rejected with HTTP 400.
+          </div>
+
+          <form onsubmit="handleDoctorCreate(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div>
+              <label style="font-size: 0.8rem; color: var(--text-dim);">Affiliated Approved Hospital *</label>
+              <select name="hospital_id" id="hospital-doctor-select" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required></select>
+              <div style="font-size: 0.72rem; color: var(--accent-cyan); margin-top: 0.25rem;">Only verified, approved hospital tenants can provision active doctors.</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 0.75rem;">
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Doctor Full Name *</label>
+                <input type="text" name="full_name" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required placeholder="e.g. Dr. Robert Chen, MD">
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">External Provider ID (NPI)</label>
+                <input type="text" name="external_provider_id" class="custom-input" style="width: 100%; margin-top: 0.2rem;" placeholder="e.g. NPI-1049283741">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Specialty *</label>
+                <select name="specialty" class="custom-input" style="width: 100%; margin-top: 0.2rem;" required>
+                  <option value="Orthopedics">Orthopedics</option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Neurology">Neurology</option>
+                  <option value="Dermatology">Dermatology</option>
+                  <option value="General Medicine">General Medicine</option>
+                  <option value="Gastroenterology">Gastroenterology</option>
+                  <option value="Pediatrics">Pediatrics</option>
+                  <option value="Ophthalmology">Ophthalmology</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Department Name</label>
+                <input type="text" name="department_name" class="custom-input" style="width: 100%; margin-top: 0.2rem;" placeholder="e.g. Orthopedic Surgery">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr 1fr; gap: 0.75rem;">
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Qualifications</label>
+                <input type="text" name="qualifications" class="custom-input" style="width: 100%; margin-top: 0.2rem;" placeholder="MD, FACS, FACC">
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Experience (Yrs)</label>
+                <input type="number" name="experience_years" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="10" min="1" max="50">
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Consult Fee ($)</label>
+                <input type="number" name="consultation_fee" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="175" required>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Languages Spoken</label>
+                <input type="text" name="languages" class="custom-input" style="width: 100%; margin-top: 0.2rem;" value="English, Spanish">
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Initial Lifecycle Status</label>
+                <select name="status" class="custom-input" style="width: 100%; margin-top: 0.2rem;">
+                  <option value="ACTIVE">ACTIVE (Ready for Appointments)</option>
+                  <option value="INVITED">INVITED (Pending Verification)</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.8rem; color: var(--text-dim);">Clinical Biography & Care Focus</label>
+              <input type="text" name="bio" class="custom-input" style="width: 100%; margin-top: 0.2rem;" placeholder="Fellowship trained in joint reconstruction and trauma surgery.">
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 0.5rem; padding: 0.55rem 1.25rem;">
+              🩺 Create Specialist & Generate 7-Day Availability
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOOKING & RESILIENT EHR RECOVERY MODAL -->
+  <div class="modal-overlay" id="booking-modal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3>Confirm Appointment & EHR Sync</h3>
+        <button class="btn-close-modal" style="background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="background: rgba(15, 23, 42, 0.7); padding: 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.6rem;">
+        <div><strong>Patient:</strong> <span id="modal-patient-name">Alice Morgan</span></div>
+        <div><strong>Doctor:</strong> <span id="modal-doctor-name">Dr. Sarah Jenkins, MD</span></div>
+        <div><strong>Appointment Time:</strong> <span id="modal-slot-time">Tomorrow at 10:00 AM</span></div>
+        <div><strong>Chief Complaint:</strong> <span id="modal-complaint">Knee pain</span></div>
+      </div>
+
+      <!-- Real-time Synchronization Stepper Box -->
+      <div class="sync-progress-box" id="modal-sync-progress"></div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn-secondary btn-close-modal">Cancel</button>
+        <button class="btn-primary" id="btn-confirm-booking" onclick="executeBooking()">
+          Confirm & Synchronize with EHR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DYNAMIC PRE-VISIT QUESTIONNAIRE MODAL -->
+  <div class="modal-overlay" id="questionnaire-modal">
+    <div class="modal-box" style="max-width: 680px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <h3>Step 16: Pre-Visit Clinical Questionnaire</h3>
+          <div style="color: var(--text-muted); font-size: 0.85rem;">
+            Approved pre-visit questionnaire to prepare your doctor for the consultation.
+          </div>
+        </div>
+        <div style="font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.3);">
+          🛡️ Intake Only • No Diagnosis
+        </div>
+      </div>
+
+      <form id="questionnaire-form" onsubmit="submitQuestionnaire(event)">
+        <div id="questionnaire-form-container" style="max-height: 420px; overflow-y: auto; padding-right: 0.5rem;"></div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="submit" class="btn-primary" id="btn-submit-quest">
+            Submit Intake & View Doctor Summary
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DOCTOR CLINICAL INTAKE REVIEW & SIGN-OFF MODAL -->
+  <div class="modal-overlay" id="doctor-review-modal">
+    <div class="modal-box" style="max-width: 720px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+        <div>
+          <h3 id="doc-review-title" style="margin: 0; color: #38bdf8;">Doctor Pre-Visit Clinical Review</h3>
+          <div id="doc-review-subtitle" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;"></div>
+        </div>
+        <button class="btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="closeDoctorReviewModal()">✕ Close</button>
+      </div>
+
+      <div id="doc-review-content" style="max-height: 440px; overflow-y: auto; padding-right: 0.5rem;"></div>
+
+      <div id="doc-review-action-area" style="margin-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.35rem; font-weight: 600;">
+          Doctor Clinical Review Notes & Action Plan:
+        </label>
+        <textarea id="doc-review-notes-input" class="custom-input" rows="2" placeholder="Enter clinical notes, orders, or pre-procedure instructions..."></textarea>
+        
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.75rem;">
+          <button class="btn-primary" id="btn-submit-doctor-review" onclick="submitDoctorReviewSignOff()">
+            ✓ Sign Off & Mark Reviewed
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATIENT AUTH / REGISTRATION MODAL -->
+  <div class="modal-overlay" id="patient-auth-modal">
+    <div class="modal-box" style="max-width: 640px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div>
+          <h3 id="patient-auth-title" style="margin: 0; color: #38bdf8;">Patient Portal Access</h3>
+          <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+            Self-register or log in to manage your appointments, health records, and preferences.
+          </div>
+        </div>
+        <button class="btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="closePatientAuthModal()">✕ Close</button>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <button type="button" id="tab-auth-register" class="btn-primary" style="font-size: 0.85rem; padding: 0.4rem 1rem;" onclick="switchAuthTab('register')">
+          New Patient Registration
+        </button>
+        <button type="button" id="tab-auth-login" class="btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 1rem;" onclick="switchAuthTab('login')">
+          Existing Patient Login
+        </button>
+      </div>
+
+      <!-- Registration Form -->
+      <form id="patient-register-form" onsubmit="handlePatientRegisterSubmit(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; max-height: 420px; overflow-y: auto; padding-right: 0.4rem;">
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Full Name *</label>
+            <input type="text" id="patient-reg-name" class="custom-input" placeholder="e.g. Eleanor Vance" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Email Address *</label>
+            <input type="email" id="patient-reg-email" class="custom-input" placeholder="e.g. eleanor@example.com" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Phone Number *</label>
+            <input type="tel" id="patient-reg-phone" class="custom-input" placeholder="e.g. +1-555-0199" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Password *</label>
+            <input type="password" id="patient-reg-password" class="custom-input" placeholder="Min 6 characters" minlength="6" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Date of Birth</label>
+            <input type="date" id="patient-reg-dob" class="custom-input">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Gender</label>
+            <select id="patient-reg-gender" class="custom-input">
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Non-Binary">Non-Binary</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Emergency Contact</label>
+            <input type="text" id="patient-reg-emergency" class="custom-input" placeholder="Name & Phone">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">Communication Preference</label>
+            <select id="patient-reg-comm" class="custom-input">
+              <option value="EMAIL">Email</option>
+              <option value="SMS">SMS / Text</option>
+              <option value="WHATSAPP">WhatsApp</option>
+              <option value="PHONE">Phone Call</option>
+            </select>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <label style="display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.25rem;">External Patient / Insurance ID (Optional)</label>
+            <input type="text" id="patient-reg-extid" class="custom-input" placeholder="e.g. EXT-987654 or INS-A12">
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Data minimization notice: Only demographic & communication details required for care coordination are recorded.</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+          <button type="button" class="btn-secondary" onclick="closePatientAuthModal()">Cancel</button>
+          <button type="submit" class="btn-primary" id="btn-submit-patient-reg">Create Account & Log In</button>
+        </div>
+      </form>
+
+      <!-- Login Form -->
+      <form id="patient-login-form" onsubmit="handlePatientLoginSubmit(event)" style="display: none;">
+        <div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem 0;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.35rem;">Email Address</label>
+            <input type="email" id="patient-login-email" class="custom-input" placeholder="e.g. alice.morgan@example.com" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.35rem;">Password</label>
+            <input type="password" id="patient-login-password" class="custom-input" placeholder="Enter your password" required>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+          <button type="button" class="btn-secondary" onclick="closePatientAuthModal()">Cancel</button>
+          <button type="submit" class="btn-primary" id="btn-submit-patient-login">Log In to Dashboard</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPOINTMENT RESCHEDULE MODAL -->
+  <div class="modal-overlay" id="reschedule-modal">
+    <div class="modal-box" style="max-width: 580px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="margin: 0; color: #38bdf8;">🔄 Reschedule Appointment</h3>
+          <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+            Select a new available consultation slot with your doctor.
+          </div>
+        </div>
+        <button class="btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="closeRescheduleModal()">✕ Close</button>
+      </div>
+
+      <div style="background: rgba(15, 23, 42, 0.7); padding: 1rem; border-radius: var(--radius-md); font-size: 0.88rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem;">
+        <div><strong>Doctor:</strong> <span id="reschedule-doctor-name">Dr. Sarah Jenkins</span></div>
+        <div><strong>Current Slot:</strong> <span id="reschedule-current-time">Loading...</span></div>
+        <input type="hidden" id="reschedule-appointment-id" value="">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.35rem; font-weight: 600;">
+            Choose New Available Slot:
+          </label>
+          <select id="reschedule-slot-select" class="custom-input" style="width: 100%;">
+            <option value="">Loading available slots...</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.35rem; font-weight: 600;">
+            Reason for Rescheduling (Optional):
+          </label>
+          <input type="text" id="reschedule-reason-input" class="custom-input" placeholder="e.g. Schedule conflict, work commitment...">
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <button class="btn-secondary" onclick="closeRescheduleModal()">Cancel</button>
+        <button class="btn-primary" id="btn-confirm-reschedule" onclick="executeReschedule()">
+          Confirm Reschedule & Sync EHR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENT CANCELLATION MODAL -->
+  <div class="modal-overlay" id="cancel-modal">
+    <div class="modal-box" style="max-width: 520px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="margin: 0; color: #f43f5e;">❌ Cancel Appointment</h3>
+          <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+            This slot will be released and cancelled in the hospital EHR system.
+          </div>
+        </div>
+        <button class="btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="closeCancelModal()">✕ Close</button>
+      </div>
+
+      <div style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.25); padding: 1rem; border-radius: var(--radius-md); font-size: 0.88rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem;">
+        <div><strong>Doctor:</strong> <span id="cancel-doctor-name">Dr. Sarah Jenkins</span></div>
+        <div><strong>Appointment Time:</strong> <span id="cancel-slot-time">Loading...</span></div>
+        <input type="hidden" id="cancel-appointment-id" value="">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-dim); font-weight: 600;">
+          Reason for Cancellation:
+        </label>
+        <select id="cancel-reason-preset" class="custom-input" onchange="document.getElementById('cancel-reason-input').value = this.value">
+          <option value="Schedule conflict">Schedule conflict</option>
+          <option value="Feeling better / Symptoms resolved">Feeling better / Symptoms resolved</option>
+          <option value="Booking with a different specialist">Booking with a different specialist</option>
+          <option value="Transportation or travel issue">Transportation or travel issue</option>
+          <option value="Other">Other (specify below)</option>
+        </select>
+        <input type="text" id="cancel-reason-input" class="custom-input" placeholder="Describe cancellation reason..." value="Schedule conflict">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <button class="btn-secondary" onclick="closeCancelModal()">Keep Appointment</button>
+        <button class="btn-primary" id="btn-confirm-cancel" style="background: #e11d48;" onclick="executeCancellation()">
+          Confirm Cancellation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOSPITAL ACTIVITY & METRICS MODAL -->
+  <div class="modal-overlay" id="hospital-activity-modal">
+    <div class="modal-box" style="max-width: 780px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div>
+          <h3 id="modal-activity-title" style="margin: 0; color: #38bdf8;">🏥 Hospital Activity & Governance Telemetry</h3>
+          <div id="modal-activity-sub" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+            Real-time activity metrics and immutable audit event stream.
+          </div>
+        </div>
+        <button class="btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="closeHospitalActivityModal()">✕ Close</button>
+      </div>
+
+      <!-- Activity Metrics Grid -->
+      <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom: 1.25rem;">
+        <div class="metric-card">
+          <div class="metric-num" id="act-metric-doctors">-</div>
+          <div class="metric-label">Active / Total Doctors</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="act-metric-depts" style="color: #38bdf8;">-</div>
+          <div class="metric-label">Departments</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="act-metric-appts" style="color: var(--accent-emerald);">-</div>
+          <div class="metric-label">Confirmed Appts</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num" id="act-metric-sync" style="color: var(--accent-amber);">-</div>
+          <div class="metric-label">EHR Syncs / Timeouts</div>
+        </div>
+      </div>
+
+      <!-- Recent Audit Events for Hospital -->
+      <div>
+        <h4 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+          📋 Hospital Audit Events (Correlation Tracked)
+        </h4>
+        <div style="max-height: 240px; overflow-y: auto;">
+          <table class="custom-table" style="font-size: 0.8rem;">
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Resource</th>
+                <th>Status</th>
+                <th>Actor</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="act-audit-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <button class="btn-secondary" onclick="closeHospitalActivityModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Script -->
+  <script type="module" src="/js/app.js?v=2.2"></script>
+</body>
+</html>
